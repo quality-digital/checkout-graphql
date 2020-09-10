@@ -102,3 +102,8 @@ input AssemblyOptionInput {
   inputValues: InputValues
   options: [AssemblyOptionInput!]
 }
+
+input ManualPriceInput {
+  itemIndex: Int
+  price: Int
+}
