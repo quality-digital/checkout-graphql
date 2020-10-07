@@ -46,4 +46,8 @@ type Mutation {
   updateOrderFormPayment(input: PaymentDataInput!): OrderForm!
     @withOrderFormId
     @cacheControl(scope: PRIVATE)
+
+    itemsOrdination(ascending: Boolean, criteria: String): OrderForm!
+    @withOrderFormId
+    @cacheControl(scope: PRIVATE)
 }
