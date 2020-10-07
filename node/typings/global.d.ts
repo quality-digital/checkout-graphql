@@ -109,6 +109,7 @@ declare global {
     parentAssemblyBinding: string | null
     productCategoryIds: string
     priceTags: string[]
+    manualPrice: number
     measurementUnit: string
     additionalInfo: {
       brandName: string
@@ -199,7 +200,7 @@ declare global {
       name: string
       value: number
     }>
-    shippingData: ShippingData
+    shippingData: ShippingData | null
     clientProfileData: ClientProfileData | null
     paymentData: PaymentData
     marketingData: OrderFormMarketingData | null
@@ -379,6 +380,7 @@ declare global {
     pickupPointId: string | null
     pickupDistance: number | null
     polygonName: string | null
+    transitTime: string | null
   }
 
   interface DeliveryId {

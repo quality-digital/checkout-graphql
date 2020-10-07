@@ -1,6 +1,6 @@
 {
   "name": "vtex.checkout-graphql",
-  "version": "0.38.0",
+  "version": "0.44.1",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -8,7 +8,6 @@
   },
   "dependencies": {
     "atob": "^2.1.2",
-    "bluebird": "^3.5.5",
     "cookie": "^0.4.0",
     "graphql": "^14.0.0",
     "graphql-tools": "^4.0.0",
@@ -17,7 +16,6 @@
   },
   "devDependencies": {
     "@types/atob": "^2.1.2",
-    "@types/bluebird": "^3.5.25",
     "@types/cookie": "^0.3.3",
     "@types/graphql": "^14.5.0",
     "@types/jest": "^24.0.18",
@@ -28,7 +26,8 @@
     "@vtex/test-tools": "^3.1.0",
     "@vtex/tsconfig": "^0.2.0",
     "typescript": "3.9.7",
-    "vtex.checkout-graphql": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-graphql@0.29.1/public/@types/vtex.checkout-graphql",
-    "vtex.search-graphql": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.search-graphql@0.21.1/public/@types/vtex.search-graphql"
+    "vtex.checkout-graphql": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.checkout-graphql@0.39.1/public/@types/vtex.checkout-graphql",
+    "vtex.country-data-settings": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.country-data-settings@0.2.0/public/@types/vtex.country-data-settings",
+    "vtex.graphql-server": "http://vtex.vtexassets.com/_v/public/typings/v1/vtex.graphql-server@1.63.0/public/_types/react"
   }
 }

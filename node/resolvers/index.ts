@@ -1,5 +1,5 @@
 import { mutations as couponMutations } from './coupon'
-import { mutations as itemMutations } from './items'
+import { root as itemRoot, mutations as itemMutations } from './items'
 import {
   root as orderFormRoot,
   queries as orderFormQueries,
@@ -14,6 +14,7 @@ import {
   mutations as paymentMutations,
 } from './payment'
 import { queries as profileQueries } from './profile'
+import { queries as slaQueries } from './sla'
 
 export const resolvers = {
   MarketingData: {
@@ -41,6 +42,7 @@ export const resolvers = {
   },
   ...orderFormRoot,
   ...shippingRoot,
+  ...itemRoot,
   Mutation: {
     ...couponMutations,
     ...itemMutations,
@@ -52,5 +54,6 @@ export const resolvers = {
     ...orderFormQueries,
     ...paymentQueries,
     ...profileQueries,
+    ...slaQueries,
   },
 }

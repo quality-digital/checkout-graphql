@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.44.1] - 2020-10-06
+### Fixed
+- Error when calculating the shipping info for an user that didn't have
+  `shippingData` filled in their order form.
+
+## [0.44.0] - 2020-10-06
+### Added
+- Optional argument `itemId` on `selectPickupOption` mutation, it can select the 
+  pickup option for an specific itemId
+- New `selectPickupOption` mutation
+- `pickupOptions` property to `Shipping` type
+
+## [0.43.0] - 2020-10-05
+### Addes
+- `shippingSLA` query performing simulation.
+
+## [0.42.0] - 2020-09-30
+### Added
+- Optional argument `orderFormId` to all queries and mutation that alters
+  information in the cart.
+
+## [0.41.1] - 2020-09-29
+### Fixed
+- GraphQL validation errors on `Item.seller` when included inside `bundleItems`.
+
+## [0.41.0] - 2020-09-28
+### Added
+- `manualPrice` property to `Item` type.
+
+## [0.40.0] - 2020-09-24
+### Added
+- `setManualPrice` mutation.
+- `adminUserAuthToken` to the checkout client.
+
+## [0.39.1] - 2020-09-21
+### Fixed
+- Error when trying to read `addressId` of a inexistent delivery address.
+- GraphQL validation errors on `Item.productId` when returning `bundleItems`.
+
+## [0.39.0] - 2020-09-15
+### Added
+- `splitItem` parameter on `updateItems` mutation. 
+
 ## [0.38.0] - 2020-09-11
 ### Added
 - Mutations:

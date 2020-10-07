@@ -1,9 +1,10 @@
 import {
   getShippingData,
-  selectDeliveryOption,
+  selectShippingOption,
   selectAddress,
 } from '../utils/shipping'
-import { AddressType } from '../constants'
+import { AddressType, DELIVERY, PICKUP_IN_POINT } from '../constants'
+import { OrderFormIdArgs } from '../utils/args'
 
 const addressTypes = new Set<string>([
   AddressType.COMMERCIAL,
@@ -29,83 +30,97 @@ export const root = {
 export const mutations = {
   estimateShipping: async (
     _: unknown,
-    { address }: { address: CheckoutAddress },
+    args: { address: CheckoutAddress } & OrderFormIdArgs,
     ctx: Context
   ) => {
-    const {
-      clients,
-      vtex: { orderFormId },
-    } = ctx
+    const { clients, vtex } = ctx
     const { checkout } = clients
+    const { orderFormId = vtex.orderFormId, address } = args
 
-    const orderForm = await checkout.orderForm()
+    const orderForm = await checkout.orderForm(orderFormId!)
     const logisticsInfo =
       orderForm.shippingData && orderForm.shippingData.logisticsInfo
     const shippingData = getShippingData(address, logisticsInfo)
 
-    const newOrderForm = await checkout.updateOrderFormShipping(
-      orderFormId!,
-      {
-        ...shippingData,
-        clearAddressIfPostalCodeNotFound: false,
-      },
-    )
+    const newOrderForm = await checkout.updateOrderFormShipping(orderFormId!, {
+      ...shippingData,
+      clearAddressIfPostalCodeNotFound: false,
+    })
 
     return newOrderForm
   },
 
   selectDeliveryOption: async (
     _: unknown,
-    { deliveryOptionId }: { deliveryOptionId: string },
+    args: { deliveryOptionId: string } & OrderFormIdArgs,
     ctx: Context
   ) => {
-    const {
-      clients,
-      vtex: { orderFormId },
-    } = ctx
+    const { clients, vtex } = ctx
     const { checkout } = clients
+    const { orderFormId = vtex.orderFormId, deliveryOptionId } = args
 
-    const orderForm = await checkout.orderForm()
-    const newShippingData = selectDeliveryOption({
-      deliveryOptionId,
+    const orderForm = await checkout.orderForm(orderFormId!)
+    const newShippingData = selectShippingOption({
+      slaId: deliveryOptionId,
       shippingData: orderForm.shippingData,
+      deliveryChannel: DELIVERY,
     })
 
-    const newOrderForm = await checkout.updateOrderFormShipping(
-      orderFormId!,
-      {
-        ...newShippingData,
-        clearAddressIfPostalCodeNotFound: false,
-      },
-    )
+    const newOrderForm = await checkout.updateOrderFormShipping(orderFormId!, {
+      ...newShippingData,
+      clearAddressIfPostalCodeNotFound: false,
+    })
+
+    return newOrderForm
+  },
+
+  selectPickupOption: async (
+    _: unknown,
+    args: { pickupOptionId: string; itemId: string } & OrderFormIdArgs,
+    ctx: Context
+  ) => {
+    const { clients, vtex } = ctx
+    const { checkout } = clients
+    const { orderFormId = vtex.orderFormId, pickupOptionId, itemId } = args
+
+    const orderForm = await checkout.orderForm(orderFormId!)
+    const newShippingData = selectShippingOption({
+      slaId: pickupOptionId,
+      itemId,
+      shippingData: orderForm.shippingData,
+      deliveryChannel: PICKUP_IN_POINT,
+    })
+
+    const newOrderForm = await checkout.updateOrderFormShipping(orderFormId!, {
+      ...newShippingData,
+      clearAddressIfPostalCodeNotFound: false,
+    })
 
     return newOrderForm
   },
 
   updateSelectedAddress: async (
     _: unknown,
-    { input }: { input: CheckoutAddress },
+    args: { input: CheckoutAddress } & OrderFormIdArgs,
     ctx: Context
   ) => {
     const {
       clients: { checkout },
-      vtex: { orderFormId },
+      vtex,
     } = ctx
+    const { orderFormId = vtex.orderFormId, input } = args
 
-    const orderForm = await checkout.orderForm()
+    const orderForm = await checkout.orderForm(orderFormId!)
 
     const newShippingData = selectAddress({
       address: input,
       shippingData: orderForm.shippingData,
     })
 
-    const newOrderForm = await checkout.updateOrderFormShipping(
-      orderFormId!,
-      {
-        ...newShippingData,
-        clearAddressIfPostalCodeNotFound: false,
-      },
-    )
+    const newOrderForm = await checkout.updateOrderFormShipping(orderFormId!, {
+      ...newShippingData,
+      clearAddressIfPostalCodeNotFound: false,
+    })
 
     return newOrderForm
   },

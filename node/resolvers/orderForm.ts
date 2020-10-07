@@ -1,7 +1,6 @@
 import { prop, propOr, compose, forEach } from 'ramda'
 
 import { CHECKOUT_COOKIE, parseCookie } from '../utils'
-import { adjustItems } from './items'
 import { fillMessages } from './messages'
 import { getShippingInfo } from '../utils/shipping'
 import {
@@ -10,6 +9,7 @@ import {
   isPaymentValid,
 } from '../utils/validation'
 import { VTEX_SESSION } from '../constants'
+import { OrderFormIdArgs } from '../utils/args'
 
 interface StoreSettings {
   enableOrderFormOptimization: boolean
@@ -34,6 +34,17 @@ export const root = {
   OrderForm: {
     id: prop('orderFormId'),
     marketingData: propOr({}, 'marketingData'),
+    allowManualPrice: async (
+      orderForm: CheckoutOrderForm,
+      _: unknown,
+      ctx: Context
+    ) => {
+      const checkoutAdminOrderForm = await ctx.clients.checkoutAdmin.orderForm()
+
+      return (
+        checkoutAdminOrderForm?.allowManualPrice || orderForm.allowManualPrice
+      )
+    },
     userType: async (
       orderForm: CheckoutOrderForm,
       __: unknown,
@@ -80,19 +91,6 @@ export const root = {
       }
 
       return newMessages
-    },
-    items: (orderForm: CheckoutOrderForm, _: unknown, ctx: Context) => {
-      const {
-        clients: { searchGraphQL },
-        vtex: { platform, logger },
-      } = ctx
-
-      return adjustItems({
-        platform,
-        items: orderForm.items,
-        searchGraphQL,
-        logger,
-      })
     },
     clientProfileData: async (
       orderForm: CheckoutOrderForm,
@@ -164,15 +162,15 @@ export async function forwardCheckoutCookies(
 export const queries = {
   orderForm: async (
     _: unknown,
-    __: unknown,
+    args: OrderFormIdArgs,
     ctx: Context
   ): Promise<CheckoutOrderForm> => {
-    const { clients } = ctx
+    const { clients, vtex } = ctx
+    const { orderFormId = vtex.orderFormId } = args
 
-    const {
-      data: newOrderForm,
-      headers,
-    } = await clients.checkout.orderFormRaw()
+    const { data: newOrderForm, headers } = await clients.checkout.orderFormRaw(
+      orderFormId
+    )
 
     /**
      * In case the enableOrderFormOptimization setting is enabled in the store,
@@ -206,13 +204,14 @@ interface MutationUpdateOrderFormPaymentArgs {
 export const mutations = {
   updateOrderFormProfile: async (
     _: unknown,
-    { input }: MutationUpdateOrderFormProfileArgs,
+    args: MutationUpdateOrderFormProfileArgs & OrderFormIdArgs,
     ctx: Context
   ): Promise<CheckoutOrderForm> => {
     const {
       clients: { checkout },
-      vtex: { orderFormId },
+      vtex,
     } = ctx
+    const { input, orderFormId = vtex.orderFormId } = args
 
     const orderFormWithProfile = await checkout.updateOrderFormProfile(
       orderFormId!,
@@ -223,13 +222,14 @@ export const mutations = {
   },
   updateClientPreferencesData: async (
     _: unknown,
-    { input }: MutationUpdateClientPreferencesDataArgs,
+    args: MutationUpdateClientPreferencesDataArgs & OrderFormIdArgs,
     ctx: Context
   ) => {
     const {
       clients: { checkout },
-      vtex: { orderFormId },
+      vtex,
     } = ctx
+    const { orderFormId = vtex.orderFormId, input } = args
 
     const updatedOrderForm = await checkout.updateOrderFormClientPreferencesData(
       orderFormId!,
@@ -243,17 +243,20 @@ export const mutations = {
   },
   updateOrderFormPayment: async (
     _: unknown,
-    { input }: MutationUpdateOrderFormPaymentArgs,
+    args: MutationUpdateOrderFormPaymentArgs & OrderFormIdArgs,
     ctx: Context
   ): Promise<CheckoutOrderForm> => {
     const {
       clients: { checkout },
-      vtex: { orderFormId },
+      vtex,
     } = ctx
+    const { orderFormId = vtex.orderFormId, input } = args
+
     const orderFormWithPayments = await checkout.updateOrderFormPayment(
       orderFormId!,
       input
     )
+
     return orderFormWithPayments
   },
 

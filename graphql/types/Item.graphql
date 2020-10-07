@@ -1,7 +1,10 @@
 scalar InputValues
-# productCategoriesObject is a Record<string, string>, in the following format:
-# { '<categoryNumber>': '<categoryName>' }
-scalar productCategoriesObject
+
+"""
+ProductCategoriesObject is a Record<string, string>, in the following format:
+{ '<categoryNumber>': '<categoryName>' }
+"""
+scalar ProductCategoriesObject
 
 type Item {
   additionalInfo: ItemAdditionalInfo
@@ -14,19 +17,26 @@ type Item {
   id: ID!
   imageUrls: ImageUrls
   listPrice: Float
+  manualPrice: Float
   measurementUnit: String
   name: String
   offerings: [Offering!]!
   options: [AssemblyOptionType]
   parentAssemblyBinding: String
   price: Float
-  productCategories: productCategoriesObject
+  productCategories: ProductCategoriesObject
   productCategoryIds: String
-  productId: String!
+  """
+  Id of the product. Can be null if included inside bundle items.
+  """
+  productId: String
   productRefId: String
   quantity: Float!
   refId: String
-  seller: String!
+  """
+  Product's seller. Can be null if included inside bundle items.
+  """
+  seller: String
   sellingPrice: Float
   sellingPriceWithAssemblies: Float
   skuName: String
@@ -143,4 +153,9 @@ input BundleItemAttachmentInput {
   bundleItemId: String!
   attachmentName: String!
   attachmentContent: AttachmentContent!
+}
+
+input ManualPriceInput {
+  itemIndex: Int!
+  price: Float!
 }
